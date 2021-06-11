@@ -1,9 +1,9 @@
 CREATE DATABASE IF NOT EXISTS employee_manager;
 USE employee_manager;
 
-DROP TABLE IF EXISTS departments;
-DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS departments;
 
 CREATE TABLE IF NOT EXISTS departments (
 	department_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -30,3 +30,4 @@ CREATE TABLE IF NOT EXISTS employees (
     FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE SET NULL,
     FOREIGN KEY (manager_id) REFERENCES employees(id) ON DELETE SET NULL
     );
+    

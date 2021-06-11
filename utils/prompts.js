@@ -2,7 +2,7 @@ const employeePrompts = [
     {
         type: 'list',
         name: 'action',
-        message: `What would you like to do? (Use ↑ and ↓ on your keyboard, then hit enter to make your selection):`,
+        message: `Select an action from the list below:`,
         choices: [
             `List all departments`, 
             `List all roles`, 

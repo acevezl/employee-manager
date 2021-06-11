@@ -1,12 +1,16 @@
-const model = require('./model');
+const model = require('./Model');
 const prompts = require('./prompts');
-let inquirer = require('inquirer');
+const inquirer = require('inquirer');
+
+// These are to wait for keypress
+const readline = require('readline');
 
 const init = function () {
+    console.clear();
     console.log(`
      ________ ____    ____ _______ _____      ___   ____  ___ ________ ________     
     |_   __  |_   \\  /   _|_   __ \\_   _|   .'   \`.|_  _||_ _|_   __  |_   __  |    
-      | |_ \_|  |   \\/   |   | |__) || |    /  .-.    \\ \\  //   | |_ \\_| | |_ \\_|    
+      | |_ \_|  |   \\/   |   | |__) || |    /  .-.  \\ \\ \\  //   | |_ \\_| | |_ \\_|    
       |  _| _  | |\\  /| |   |  ___/ | |   _| |   | |  \\ \\//    |  _| _  |  _| _     
      _| |__/ |_| |_\\/_| |_ _| |_   _| |__/ \\  \`-'  / _|  |_   _| |__/ |_| |__/ |    
     |________|_____||_____|_____| |________|\`.___.' |______| |________|________|    
@@ -18,18 +22,20 @@ const init = function () {
      _| |_\\/_| |_ _/ /   \\ \\_ _| |_\\   |_ _/ /   \\ \\_\\ \`.___]  |_| |__/ |_| |  \\ \\_  
     |_____||_____|____| |____|_____|\\____|____| |____|\`._____.'|________|____| |___|                         
     `);
-    
-    console.log (`Welcome to Employee Manager, please follow the prompts below`);
 
-    let exit = false;
-    do {
-        let action = promptAction(prompts);
-        switch (action) {
+    promptActions(prompts.employeePrompts);
+}
+
+promptActions = function(prompt) {
+    inquirer.prompt(
+        prompt
+    ).then(answer => {
+        switch (answer.action) {
             case 'List all departments':
-                // model.listAllDepartments
+                model.listAllDepartments();
                 break;
             case 'List all roles':
-                // model.listAllRoles
+                model.listAllRoles();
                 break;
             case 'List all employees':
                 model.listAllEmployees();
@@ -62,20 +68,12 @@ const init = function () {
                 // model.deleteEmployee();
                 break;
             case 'Exit Employee Manager':
-                exit = true;
+                process.exit();
         }
-    } while (!exit);
-
-    console.log(`\nGoodbye!\n`);
-
-}
-
-let promptAction = function(promptInfo) {
-    inquirer.prompt(
-        promptInfo
-    ).then(answer => {
-        return answer;
-    }).catch(error => {
+        waitForKeyPress();
+        init();
+    })
+    .catch(error => {
         if(error.isTtyError) {
             console.log('Prompt couldn\'t be rendered')
         } else {
@@ -83,6 +81,17 @@ let promptAction = function(promptInfo) {
         }
     });
 }
+
+function waitForKeyPress() {
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
+    process.stdin.on('keypress', (str, key) => {
+        if (key.ctrl && key.name === 'c') {
+            process.exit();
+        } 
+    });
+}
+
 module.exports = {
     init
 }

@@ -6,7 +6,9 @@
   "dependencies": {
     "console.table": "^0.10.0",
     "express": "^4.17.1",
-    "mysql2": "^2.2.5"
+    "inquirer": "^8.1.0",
+    "mysql2": "^2.2.5",
+    "wait-console-input": "^0.1.7"
   },
   "devDependencies": {},
   "scripts": {

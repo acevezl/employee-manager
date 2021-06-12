@@ -16,6 +16,7 @@ Model.prototype.listAllDepartments = function(callback) {
     `,
     (err,res) => {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);
@@ -34,6 +35,7 @@ Model.prototype.listAllRoles = function(callback) {
     `,
     function (err,res) {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);
@@ -55,6 +57,7 @@ Model.prototype.listAllEmployees = function(callback) {
     LEFT JOIN departments ON roles.department_id = departments.department_id;`,
     function (err,res) {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);
@@ -73,6 +76,7 @@ Model.prototype.listAllEmployeesLite = function(callback) {
     LEFT JOIN departments ON roles.department_id = departments.department_id;`,
     function (err,res) {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);
@@ -86,19 +90,23 @@ Model.prototype.addDepartment = function(department, callback) {
     VALUES ('${department}');`,
     function (err,res) {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);
     });
 }
 
-Model.prototype.addRole = function(role, callback) {
-    console.log(`\nAdding new role: [ ${role} ]`);
+Model.prototype.addRole = function(role, department, callback) {
+    console.log(`\nAdding new role: [ ${role.role_title} ]`);
+    console.log(department);
+    let deptId = department.split(":", 1);
     this.database.query(`
-    INSERT INTO roles (role_title) 
-    VALUES ('${role}');`,
+    INSERT INTO roles (role_title, role_salary, department_id) 
+    VALUES ('${role.role_title}','${role.salary}',${deptId});`,
     function (err,res) {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);
@@ -114,6 +122,7 @@ Model.prototype.deleteDepartment = function(department, callback) {
     WHERE department_id = '${id}';`,
     function (err,res) {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);
@@ -129,6 +138,7 @@ Model.prototype.deleteRole = function(role, callback) {
     WHERE role_id = '${id}';`,
     function (err,res) {
         if (err) {
+            console.log(err);
             return err;
         }
         return callback(res);

@@ -37,8 +37,13 @@ const newDepartmentPrompts = [
 const newRolePrompts = [
     {
         type: 'input',
-        name: 'role',
+        name: 'role_title',
         message: `Type the name of the new role:`,
+    },
+    {
+        type: 'input',
+        name: 'salary',
+        message: `Type the salary of the new role:`,
     }
 ];
 

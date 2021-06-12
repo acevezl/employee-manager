@@ -50,7 +50,7 @@ EmployeeManager.prototype.loadMenu = function() {
                 this.addDepartment();
                 break;
             case 'Add a role':
-                this.addARole();
+                this.addRole();
                 break;
             case 'Add an employee':
                 // Model.addAnEmployee();
@@ -132,20 +132,33 @@ EmployeeManager.prototype.addDepartment = function() {
 }
 
 EmployeeManager.prototype.addRole = function() {
-    inquirer.prompt(
-        this.prompts.newRolePrompts
-    )
-    .then(answer => {
-        this.model.addRole(answer.role, callback => {
-            this.listAllRoles();
+    
+    this.model.listAllDepartments((departments)=>{
+        inquirer.prompt(
+            this.prompts.newRolePrompts
+        )
+        .then(answer => {
+            inquirer.prompt(
+                {
+                    type:'list',
+                    name: 'department',
+                    message: `Select the department to which this role belongs:`,
+                    choices: this.listify(departments)
+                }
+            )
+            .then( department => {
+                this.model.addRole(answer, department.department, callback => {
+                    this.listAllRoles();
+                });
+            });
+        })
+        .catch(error => {
+            if(error.isTtyError) {
+                console.log('Prompt couldn\'t be rendered');
+            } else {
+                console.log(error);
+            }
         });
-    })
-    .catch(error => {
-        if(error.isTtyError) {
-            console.log('Prompt couldn\'t be rendered');
-        } else {
-            console.log(error);
-        }
     });
 }
 

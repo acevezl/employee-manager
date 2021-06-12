@@ -1,34 +1,33 @@
-const Reader = require('wait-console-input');
+const inquirer = require('inquirer');
+
+const EmployeeManager = require('./EmployeeManager');
 
 function Model() {
     this.database = require('../config/connection');
-    this.cTable = require('console.table');
-    
 } 
 
-Model.prototype.listAllDepartments = function() {
-    console.log(`\n\nRetrieving all departments...\n\n`);
+Model.prototype.listAllDepartments = function(callback) {
+    console.log(`Retrieving all departments...`);
     this.database.query(`
     SELECT department_id AS 'Department Id',
         departments.department_name as Department
     FROM
         departments;
     `,
-    function (err,res) {
+    (err,res) => {
         if (err) {
             return err;
         }
-        console.clear();
-        console.table(res);
+        return callback(res);
     });
 }
 
-Model.prototype.listAllRoles = function() {
+Model.prototype.listAllRoles = function(callback) {
     console.log(`\n\nRetrieving all roles...\n\n`);
     this.database.query(`
     SELECT roles.role_id as 'Role Id',
         roles.role_title as 'Role Title',
-        roles.role_salary as 'Salary',
+        CONCAT('$ ',FORMAT(roles.role_salary,0)) AS Salary,
         departments.department_name as 'Department'
     FROM roles
     LEFT JOIN departments ON roles.department_id = departments.department_id;
@@ -37,13 +36,11 @@ Model.prototype.listAllRoles = function() {
         if (err) {
             return err;
         }
-        console.clear();
-        console.table(res);
-        
+        return callback(res);
     });
 };
 
-Model.prototype.listAllEmployees = function() {
+Model.prototype.listAllEmployees = function(callback) {
     console.log(`\n\nRetrieving all employees...\n\n`);
     this.database.query(`
     SELECT employees.id as Id, employees.first_name AS 'First Name', employees.last_name AS 'Last Name', 
@@ -60,9 +57,21 @@ Model.prototype.listAllEmployees = function() {
         if (err) {
             return err;
         }
-        console.clear();
-        console.table(res);
+        return callback(res);
     });
 };
+
+Model.prototype.addDepartment = function(department, callback) {
+    console.log(`\nAdding new department: [ ${department} ]`);
+    this.database.query(`
+    INSERT INTO departments (department_name) 
+    VALUES ('${department}');`,
+    function (err,res) {
+        if (err) {
+            return err;
+        }
+        return callback(res);
+    });
+}
 
 module.exports = Model;

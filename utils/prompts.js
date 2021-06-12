@@ -2,7 +2,7 @@ const employeePrompts = [
     {
         type: 'list',
         name: 'action',
-        message: `Select an action from the list below:`,
+        message: `What would you like to do?`,
         choices: [
             `List all departments`, 
             `List all roles`, 
@@ -17,10 +17,20 @@ const employeePrompts = [
             `Delete role`,
             `Delete employee`,
             `Exit Employee Manager`
-        ]
+        ],
+        pageSize: 13
+    }
+];
+
+const newDepartmentPrompts = [
+    {
+        type: 'input',
+        name: 'department',
+        message: `Type the name of the new department:`,
     }
 ];
 
 module.exports = {
-    employeePrompts
+    employeePrompts,
+    newDepartmentPrompts
 }

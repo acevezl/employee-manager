@@ -50,7 +50,7 @@ EmployeeManager.prototype.loadMenu = function() {
                 this.addDepartment();
                 break;
             case 'Add a role':
-                // Model.addARole();
+                this.addARole();
                 break;
             case 'Add an employee':
                 // Model.addAnEmployee();
@@ -68,7 +68,7 @@ EmployeeManager.prototype.loadMenu = function() {
                 this.deleteDepartment();
                 break;
             case 'Delete role':
-                // Model.deleteRole();
+                this.deleteRole();
                 break;
             case 'Delete employee':
                 // Model.deleteEmployee();

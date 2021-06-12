@@ -1,3 +1,5 @@
+const inquirer = require("inquirer");
+
 const employeePrompts = [
     {
         type: 'list',
@@ -16,7 +18,9 @@ const employeePrompts = [
             `Delete department`,
             `Delete role`,
             `Delete employee`,
-            `Exit Employee Manager`
+            new inquirer.Separator(),
+            `Exit Employee Manager`,
+            new inquirer.Separator()
         ],
         pageSize: 13
     }
@@ -30,7 +34,16 @@ const newDepartmentPrompts = [
     }
 ];
 
+const newRolePrompts = [
+    {
+        type: 'input',
+        name: 'role',
+        message: `Type the name of the new role:`,
+    }
+];
+
 module.exports = {
     employeePrompts,
-    newDepartmentPrompts
+    newDepartmentPrompts,
+    newRolePrompts
 }

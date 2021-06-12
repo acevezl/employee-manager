@@ -61,11 +61,72 @@ Model.prototype.listAllEmployees = function(callback) {
     });
 };
 
+Model.prototype.listAllEmployeesLite = function(callback) {
+    console.log(`\n\nRetrieving all employees...\n\n`);
+    this.database.query(`
+    SELECT employees.id as Id, employees.first_name AS 'First Name', employees.last_name AS 'Last Name', 
+        roles.role_title AS 'Title',  
+        departments.department_name as Department
+    FROM
+        employees
+    LEFT JOIN roles ON employees.role_id = roles.role_id
+    LEFT JOIN departments ON roles.department_id = departments.department_id;`,
+    function (err,res) {
+        if (err) {
+            return err;
+        }
+        return callback(res);
+    });
+};
+
 Model.prototype.addDepartment = function(department, callback) {
     console.log(`\nAdding new department: [ ${department} ]`);
     this.database.query(`
     INSERT INTO departments (department_name) 
     VALUES ('${department}');`,
+    function (err,res) {
+        if (err) {
+            return err;
+        }
+        return callback(res);
+    });
+}
+
+Model.prototype.addRole = function(role, callback) {
+    console.log(`\nAdding new role: [ ${role} ]`);
+    this.database.query(`
+    INSERT INTO roles (role_title) 
+    VALUES ('${role}');`,
+    function (err,res) {
+        if (err) {
+            return err;
+        }
+        return callback(res);
+    });
+}
+
+Model.prototype.deleteDepartment = function(department, callback) {
+    
+    console.log(`\nDeleting department: [ ${department}]`);
+    let id = department.split(":", 1);
+    this.database.query(`
+    DELETE FROM departments  
+    WHERE department_id = '${id}';`,
+    function (err,res) {
+        if (err) {
+            return err;
+        }
+        return callback(res);
+    });
+}
+
+Model.prototype.deleteRole = function(role, callback) {
+    
+    console.log(`\nDeleting role: [ ${role}]`);
+    let id = role.split(":", 1);
+    this.database.query(`
+    DELETE FROM roles  
+    WHERE role_id = '${id}';`,
     function (err,res) {
         if (err) {
             return err;

@@ -12,9 +12,8 @@ const employeePrompts = [
             `Add a department`, 
             `Add a role`, 
             `Add an employee`, 
-            `Update department`,
-            `Update role`,
-            `Update employee info`,
+            `Update employee role`,
+            `Update employee manager`,
             `Delete department`,
             `Delete role`,
             `Delete employee`,
@@ -47,8 +46,21 @@ const newRolePrompts = [
     }
 ];
 
+const newEmployeePrompts = [
+    {
+        type: 'input',
+        name: 'first_name',
+        message: `Type the employee's first name:`,
+    },
+    {
+        type: 'input',
+        name: 'last_name',
+        message: `Type the employee's last name:`,
+    }
+];
 module.exports = {
     employeePrompts,
     newDepartmentPrompts,
-    newRolePrompts
+    newRolePrompts,
+    newEmployeePrompts
 }

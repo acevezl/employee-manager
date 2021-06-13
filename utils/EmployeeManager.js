@@ -53,16 +53,13 @@ EmployeeManager.prototype.loadMenu = function() {
                 this.addRole();
                 break;
             case 'Add an employee':
-                // Model.addAnEmployee();
+                this.addEmployee();
                 break;
-            case 'Update department name':
-                // Model.updateDepartment();
+            case 'Update employee role':
+                this.updateEmployeeRole();
                 break;
-            case 'Update role name and salary':
-                // Model.updateRole();
-                break;
-            case 'Update employee info':
-                // Model.updateEmployee();
+            case 'Update employee manager':
+                this.updateEmployeeManager();
                 break;
             case 'Delete department':
                 this.deleteDepartment();
@@ -71,7 +68,7 @@ EmployeeManager.prototype.loadMenu = function() {
                 this.deleteRole();
                 break;
             case 'Delete employee':
-                // Model.deleteEmployee();
+                this.deleteEmployee();
                 break;
             case 'Exit Employee Manager':
                 process.exit();
@@ -105,7 +102,7 @@ EmployeeManager.prototype.listAllRoles = function() {
 }
 
 EmployeeManager.prototype.listAllEmployees  = function() {
-    this.model.listAllEmployeesLite((result)=>{
+    this.model.listAllEmployees((result)=>{
         console.clear();
         console.table(result);
         consoleReader.wait('Return to main menu: ');
@@ -162,6 +159,133 @@ EmployeeManager.prototype.addRole = function() {
     });
 }
 
+EmployeeManager.prototype.addEmployee = function() {
+    
+    this.model.listAllRolesLite((roles)=>{
+        inquirer.prompt(
+            this.prompts.newEmployeePrompts
+        )
+        .then(answer => {
+            inquirer.prompt(
+                {
+                    type:'list',
+                    name: 'role',
+                    message: `Select the role of this employee:`,
+                    choices: this.listify(roles)
+                }
+            )
+            .then( role => {
+                this.model.listAllEmployeesLite((managers) => {
+                    inquirer.prompt(
+                        {
+                            type: 'list',
+                            name: 'manager',
+                            message: `Select the manager of this employee: `,
+                            choices: this.listify(managers) 
+                        }
+                    )
+                    .then(manager => {
+                        this.model.addEmployee(answer, role, manager, callback => {
+                            this.listAllEmployees();
+                        });
+                    })
+                })
+            });
+        })
+        .catch(error => {
+            if(error.isTtyError) {
+                console.log('Prompt couldn\'t be rendered');
+            } else {
+                console.log(error);
+            }
+        });
+    });
+}
+
+EmployeeManager.prototype.updateEmployeeRole = function() {
+    
+    this.model.listAllEmployeesLite((employees)=>{
+        inquirer.prompt(
+            {
+                type: 'list',
+                name: 'employee',
+                message: 'Select the employee to modify from the list below:',
+                choices: this.listify(employees)
+            }
+        )
+        .then(answer => {
+            this.model.listAllRolesLite((roles)=>{
+                inquirer.prompt(
+                    {
+                        type:'list',
+                        name: 'role',
+                        message: `Select the new role for this employee:`,
+                        choices: this.listify(roles)
+                    }
+                )
+                .then( newRole => {
+                    if (newRole.manager === 'None, return to main menu') {
+                        this.init();
+                    } else {
+                        this.model.updateEmployeeRole(answer.employee, newRole.role, callback => {
+                            this.listAllEmployees();
+                        });
+                    }
+                      
+                })
+            })
+        })
+        .catch(error => {
+            if(error.isTtyError) {
+                console.log('Prompt couldn\'t be rendered');
+            } else {
+                console.log(error);
+            }
+        });
+    });
+}
+
+EmployeeManager.prototype.updateEmployeeManager = function() {
+    
+    this.model.listAllEmployeesLite((employees)=>{
+        inquirer.prompt(
+            {
+                type: 'list',
+                name: 'employee',
+                message: 'Select the employee to modify from the list below:',
+                choices: this.listify(employees)
+            }
+        )
+        .then(answer => {
+            inquirer.prompt(
+                {
+                    type:'list',
+                    name: 'manager',
+                    message: `Select the new manager for this employee:`,
+                    choices: this.listify(employees)
+                }
+            )
+            .then( newManager => {
+                if (newManager.manager === 'None, return to main menu') {
+                    this.init();
+                } else {
+                    this.model.updateEmployeeManager(answer.employee, newManager.manager, callback => {
+                        this.listAllEmployees();
+                    });
+                }
+                    
+            })
+        })
+        .catch(error => {
+            if(error.isTtyError) {
+                console.log('Prompt couldn\'t be rendered');
+            } else {
+                console.log(error);
+            }
+        });
+    });
+}
+
 EmployeeManager.prototype.deleteDepartment = function() {
     
     this.model.listAllDepartments((results)=>{
@@ -206,7 +330,7 @@ EmployeeManager.prototype.deleteDepartment = function() {
 
 EmployeeManager.prototype.deleteRole = function() {
     
-    this.model.listAllRoles((results)=>{
+    this.model.listAllRolesLite((results)=>{
         
         inquirer.prompt(
             {
@@ -232,6 +356,48 @@ EmployeeManager.prototype.deleteRole = function() {
                         });
                     } else {
                         this.deleteRole();
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            if(error.isTtyError) {
+                console.log('Prompt couldn\'t be rendered');
+            } else {
+                console.log(error);
+            }
+        });
+    });
+}
+
+EmployeeManager.prototype.deleteEmployee = function() {
+    
+    this.model.listAllEmployeesLite((results)=>{
+        
+        inquirer.prompt(
+            {
+                type: 'list',
+                name: 'employee',
+                message: `Select employee to delete:`,
+                choices: this.listify(results)
+            }
+        )
+        .then(answer => {
+            if (answer.role === 'None, return to main menu') {
+                this.init();
+            } else {
+                inquirer.prompt({
+                    type: 'confirm',
+                    name: 'confirmDelete',
+                    message: 'This action cannot be undone. Are you sure?'
+                })
+                .then (confirm => {
+                    if (confirm.confirmDelete) {
+                        this.model.deleteEmployee(answer.employee, callback => {
+                            this.listAllEmployees();
+                        });
+                    } else {
+                        this.deleteEmployee();
                     }
                 });
             }

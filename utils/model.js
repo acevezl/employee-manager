@@ -164,7 +164,7 @@ Model.prototype.updateEmployeeManager = function(employee, manager, callback) {
     let id = employee.split(":", 1);
     let managerId = manager.split(":", 1);
     this.database.query(`
-    UPDATE employees SET manager_id = '${managerId}' WHERE (id = '${id}');
+    UPDATE employees SET manager_idd = '${managerId}' WHERE (id = '${id}');
     `,
     function (err,res) {
         if (err) {
